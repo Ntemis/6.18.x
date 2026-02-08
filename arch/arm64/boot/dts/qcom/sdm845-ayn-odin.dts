@@ -1452,8 +1452,8 @@
 	cd-gpios = <&tlmm 126 GPIO_ACTIVE_LOW>;
 
 	pinctrl-names = "default", "sleep";
-	pinctrl-0 = <&sdc2_on &sdc2_cd>;
-	pinctrl-1 = <&sdc2_off>;
+	pinctrl-0 = <&sdc2_clk_on &sdc2_cmd_on &sdc2_data_on &sdc2_cd>;
+	pinctrl-1 = <&sdc2_clk_off &sdc2_cmd_off &sdc2_data_off &sdc2_cd>;
 
 	bus-width = <4>;
 	no-sdio;
@@ -1686,52 +1686,51 @@
 		output-high;
 	};
 
-	sdc2_on: sdc2-on-state {
-		clk-pins {
-			pins = "sdc2_clk";
-			bias-disable;
-			drive-strength = <16>;
-		};
-
-		cmd-pins {
-			pins = "sdc2_cmd";
-			bias-pull-up;
-			drive-strength = <10>;
-		};
-
-		data-pins {
-			pins = "sdc2_data";
-			bias-pull-up;
-			drive-strength = <10>;
-		};
+	/* SD Card Clock Pins */
+	sdc2_clk_on: sdc2-clk-on-state {
+		pins = "sdc2_clk";
+		bias-disable;
+		drive-strength = <16>;
 	};
 
-	sdc2_off: sdc2-off-state {
-		clk-pins {
-			pins = "sdc2_clk";
-			bias-disable;
-			drive-strength = <2>;
-		};
-
-		cmd-pins {
-			pins = "sdc2_cmd";
-			bias-pull-up;
-			drive-strength = <2>;
-		};
-
-		data-pins {
-			pins = "sdc2_data";
-			bias-pull-up;
-			drive-strength = <2>;
-		};
+	sdc2_clk_off: sdc2-clk-off-state {
+		pins = "sdc2_clk";
+		bias-disable;
+		drive-strength = <2>;
 	};
 
+	/* SD Card Command Pins */
+	sdc2_cmd_on: sdc2-cmd-on-state {
+		pins = "sdc2_cmd";
+		bias-pull-up;
+		drive-strength = <10>;
+	};
+
+	sdc2_cmd_off: sdc2-cmd-off-state {
+		pins = "sdc2_cmd";
+		bias-pull-up;
+		drive-strength = <2>;
+	};
+
+	/* SD Card Data Pins */
+	sdc2_data_on: sdc2-data-on-state {
+		pins = "sdc2_data";
+		bias-pull-up;
+		drive-strength = <10>;
+	};
+
+	sdc2_data_off: sdc2-data-off-state {
+		pins = "sdc2_data";
+		bias-pull-up;
+		drive-strength = <2>;
+	};
+
+	/* Card Detect Pin */
 	sdc2_cd: sdc2-cd-state {
 		pins = "gpio126";
 		function = "gpio";
 		bias-pull-up;
 		drive-strength = <2>;
-		input-enable;
 	};
 
 	ts_int_active: ts-int-active-state {
