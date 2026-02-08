@@ -36,7 +36,7 @@
 	battery: battery {
 		compatible = "simple-battery";
 		voltage-min-design-microvolt = <3400000>;
-		voltage-max-design-microvolt = <4400000>;
+		voltage-max-design-microvolt = <4350000>;
 		energy-full-design-microwatt-hours = <24420000>;
 		charge-full-design-microamp-hours = <6600000>;
 	};
@@ -211,25 +211,6 @@
 		
 		pinctrl-names = "default";
 		pinctrl-0 = <&fan_pins>;
-	};
-
-	/* WCN3990 WiFi/BT Power Sequencer */
-	wcn3990_pwrseq: wcn3990-pwrseq {
-		compatible = "qcom,wcn3990-pwrseq";
-		
-		vddio-supply = <&vreg_s3a_1p35>;
-		vddxo-supply = <&vreg_s5a_2p04>;
-		vddrf-supply = <&vreg_l17a_1p3>;
-		vddch0-supply = <&vreg_l25a_3p3>;
-		
-		clocks = <&rpmhcc RPMH_RF_CLK2>;
-		clock-names = "rf_clk";
-		
-		wlan-enable-gpios = <&tlmm 52 GPIO_ACTIVE_HIGH>;
-		bt-enable-gpios = <&tlmm 83 GPIO_ACTIVE_HIGH>;
-		
-		pinctrl-names = "default";
-		pinctrl-0 = <&wcn3990_wlan_en &wcn3990_bt_en>;
 	};
 
 	reserved-memory {
@@ -746,8 +727,8 @@
 		};
 
 		vreg_l20a_2p95: ldo20 {
-			regulator-min-microvolt = <2950000>;
-			regulator-max-microvolt = <2960000>;
+			regulator-min-microvolt = <2960000>;
+			regulator-max-microvolt = <2968000>;
 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 		};
 
@@ -839,6 +820,10 @@
 			   <GCC_QSPI_CNOC_PERIPH_AHB_CLK>,
 			   <GCC_LPASS_Q6_AXI_CLK>,
 			   <GCC_LPASS_SWAY_CLK>;
+};
+
+&gpi_dma1 {
+	status = "okay";
 };
 
 &gpu {
@@ -1358,11 +1343,15 @@
 &uart6 {
 	status = "okay";
 
+	pinctrl-0 = <&qup_uart6_4pin>;
+
 	bluetooth {
 		compatible = "qcom,wcn3990-bt";
 
-		power-domains = <&wcn3990_pwrseq>;
-
+		vddio-supply = <&vreg_s4a_1p8>;
+		vddxo-supply = <&vreg_l7a_1p8>;
+		vddrf-supply = <&vreg_l17a_1p3>;
+		vddch0-supply = <&vreg_l25a_3p3>;
 		max-speed = <3200000>;
 	};
 };
@@ -1370,12 +1359,10 @@
 &ufs_mem_hc {
 	status = "okay";
 
+	reset-gpios = <&tlmm 150 GPIO_ACTIVE_LOW>;
+
 	vcc-supply = <&vreg_l20a_2p95>;
-	vcc-max-microamp = <600000>;
-	vccq-supply = <&vreg_l26a_1p2>;
-	vccq-max-microamp = <600000>;
-	vccq2-supply = <&vreg_s4a_1p8>;
-	vccq2-max-microamp = <600000>;
+	vcc-max-microamp = <800000>;
 };
 
 &ufs_mem_phy {
@@ -1388,6 +1375,7 @@
 /* Primary USB port with USB 3.1 support */
 &usb_1 {
 	status = "okay";
+    qcom,select-utmi-as-pipe-clk;
 };
 
 &usb_1_dwc3 {
@@ -1420,8 +1408,8 @@
 &usb_1_qmpphy {
 	status = "okay";
 
-	vdda-phy-supply = <&vreg_l1a_0p875>;
-	vdda-pll-supply = <&vreg_l26a_1p2>;
+	vdda-phy-supply = <&vreg_l26a_1p2>;
+	vdda-pll-supply = <&vreg_l1a_0p875>;
 };
 
 &venus {
@@ -1438,8 +1426,6 @@
 	vdd-1.3-rfa-supply = <&vreg_l17a_1p3>;
 	vdd-3.3-ch0-supply = <&vreg_l25a_3p3>;
 	vdd-3.3-ch1-supply = <&vreg_l23a_3p3>;
-	qcom,snoc-host-cap-8bit-quirk;
-	qcom,ath10k-calibration-variant = "AYN_Odin";
 };
 
 /* SD Card slot */
@@ -1771,23 +1757,6 @@
 		drive-strength = <2>;
 		bias-disable;
 		output-high;
-	};
-
-	/* WCN3990 WiFi/BT enable pins */
-	wcn3990_wlan_en: wcn3990-wlan-en-state {
-		pins = "gpio52";
-		function = "gpio";
-		drive-strength = <2>;
-		bias-pull-down;
-		output-low;
-	};
-
-	wcn3990_bt_en: wcn3990-bt-en-state {
-		pins = "gpio83";
-		function = "gpio";
-		drive-strength = <2>;
-		bias-pull-down;
-		output-low;
 	};
 
 	/* WCD9340 codec interrupt */
