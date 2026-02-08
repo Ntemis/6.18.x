@@ -1149,9 +1149,9 @@
 
 &slim {
     status = "okay";
-
+    
     wcd9340: codec@1 {
-        compatible = "slimbus,wcd9340", "slim217,250";
+        compatible = "slim217,250";
         reg = <1 0>;
         
         pinctrl-0 = <&wcd_intr_default>;
@@ -1171,37 +1171,38 @@
         vdd-tx-supply = <&vreg_s4a_1p8>;
         vdd-rx-supply = <&vreg_s4a_1p8>;
         vdd-io-supply = <&vreg_s4a_1p8>;
+		qcom,micbias1-microvolt = <2700000>;
+		qcom,micbias2-microvolt = <1800000>;
+		qcom,micbias3-microvolt = <2700000>;
+		qcom,micbias4-microvolt = <2700000>;
         
         #sound-dai-cells = <1>;
+        #address-cells = <1>;
+        #size-cells = <1>;
+    };
+};
 
-        /* Soundwire Master Sub-node */
-        swm: soundwire@c85 {
-            #address-cells = <2>;
-            #size-cells = <0>;
-            #sound-dai-cells = <1>;
+&swr0 {
+    status = "okay";
 
-            left_spkr: speaker@0,1 {
-                compatible = "sdw20217010d00";
-                reg = <0 1>;
-                powerdown-gpios = <&tlmm 89 GPIO_ACTIVE_HIGH>;
-                #thermal-sensor-cells = <0>;
-                sound-name-prefix = "SpkrLeft";
-                #sound-dai-cells = <0>;
-                vdd-supply = <&vreg_s4a_1p8>;
-                vdd-io-supply = <&vreg_s4a_1p8>;
-            };
+    left_spkr: speaker@0,1 {
+        compatible = "sdw20217010d00";
+        reg = <0 1>;
+        powerdown-gpios = <&tlmm 89 GPIO_ACTIVE_HIGH>;
+        #thermal-sensor-cells = <0>;
+        sound-name-prefix = "SpkrLeft";
+        #sound-dai-cells = <0>;
+        vdd-supply = <&vreg_s4a_1p8>;
+    };
 
-            right_spkr: speaker@0,2 {
-                compatible = "sdw20217010d00";
-                reg = <0 2>;
-                powerdown-gpios = <&tlmm 90 GPIO_ACTIVE_HIGH>;
-                #thermal-sensor-cells = <0>;
-                sound-name-prefix = "SpkrRight";
-                #sound-dai-cells = <0>;
-                vdd-supply = <&vreg_s4a_1p8>;
-                vdd-io-supply = <&vreg_s4a_1p8>;
-            };
-        };
+    right_spkr: speaker@0,2 {
+        compatible = "sdw20217010d00";
+        reg = <0 2>;
+        powerdown-gpios = <&tlmm 90 GPIO_ACTIVE_HIGH>;
+        #thermal-sensor-cells = <0>;
+        sound-name-prefix = "SpkrRight";
+        #sound-dai-cells = <0>;
+        vdd-supply = <&vreg_s4a_1p8>;
     };
 };
 
