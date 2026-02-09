@@ -1182,7 +1182,7 @@
     };
 };
 
-&swr0 {
+&swm {
     status = "okay";
 
     left_spkr: speaker@0,1 {
@@ -1506,7 +1506,7 @@
 
 	/* Right trigger (R2) */
 	adc-chan@97 {
-		reg = <ADC5_GPIO21>;
+		reg = <ADC5_AMUX_THM5>;
 		qcom,decimation = <0>;
 		qcom,pre-scaling = <1 1>;
 		qcom,ratiometric;
