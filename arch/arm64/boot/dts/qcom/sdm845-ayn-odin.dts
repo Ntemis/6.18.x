@@ -204,17 +204,29 @@
 	/* Fan cooling with PWM control */
 	fan: pwm-fan {
 		compatible = "pwm-fan";
-		pwms = <&pmi8998_lpg 1 50000>; /* Channel 2, 20kHz */
+		pwms = <&pmi8998_lpg 4 50000>; /* LPG channel 5 (index 4), 20kHz */
 		cooling-min-state = <0>;
 		cooling-max-state = <255>;
 		#cooling-cells = <2>;
-		
-		/* Fan control GPIOs */
-		fan-supply = <&vreg_3p3_usb>;
-		
+
+		cooling-levels = <0 64 128 192 255>;
+
 		pinctrl-names = "default";
 		pinctrl-0 = <&fan_pins>;
+		status = "okay";
 	};
+
+	/* GPIO control for fan enable */
+	fan-enable {
+		compatible = "regulator-fixed";
+		regulator-name = "fan-enable";
+		gpio = <&tlmm 44 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		regulator-boot-on;
+		regulator-always-on;
+		pinctrl-names = "default";
+		pinctrl-0 = <&fan_enable_pins>;
+ 	};
 
 	reserved-memory {
 		#address-cells = <2>;
@@ -1392,7 +1404,7 @@
 	reset-gpios = <&tlmm 150 GPIO_ACTIVE_LOW>;
 
 	vcc-supply = <&vreg_l20a_2p95>;
-	vcc-max-microamp = <800000>;
+	vcc-max-microamp = <600000>;
 };
 
 &ufs_mem_phy {
@@ -1581,15 +1593,16 @@
 &tlmm {
 	gpio-reserved-ranges = <0 4>, <81 4>;
 
-	fan_pins: fan-state {
-		fan-en-pins {
-			pins = "gpio44";
-			function = "gpio";
-			drive-strength = <2>;
-			bias-disable;
-			output-high;
-		};
+	/* Separate fan control pins to avoid conflicts */
+	fan_enable_pins: fan-enable-state {
+		pins = "gpio44";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-disable;
+		output-high;
+	};
 
+	fan_pins: fan-state {
 		fan-fg-pins {
 			pins = "gpio30";
 			function = "gpio";
@@ -1920,11 +1933,10 @@
 &pmi8998_gpios {
 	/* PWM output for fan */
 	pwm_out: pwm-out-state {
-		pins = "gpio5";
+		pins = "gpio5"; /* This is LPG channel 5 */
 		function = "func1";
 		bias-disable;
 		power-source = <0>;
-		output-low;
 		qcom,drive-strength = <3>;
 		drive-push-pull;
 	};
