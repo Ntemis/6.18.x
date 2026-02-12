@@ -45,6 +45,7 @@
 	vreg_5p0_boost: vreg-5p0-boost {
 		compatible = "regulator-fixed";
 		regulator-name = "vreg_5p0_boost";
+		regulator-boot-on;
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
 		
@@ -59,6 +60,7 @@
 		regulator-name = "vreg_3p3_usb";
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
+		regulator-boot-on;
 		regulator-always-on;
 		
 		gpio = <&tlmm 128 GPIO_ACTIVE_HIGH>;
@@ -73,6 +75,7 @@
 		regulator-name = "vreg_1p2_usb";
 		regulator-min-microvolt = <1200000>;
 		regulator-max-microvolt = <1200000>;
+		regulator-boot-on;
 		regulator-always-on;
 		
 		gpio = <&tlmm 135 GPIO_ACTIVE_HIGH>;
@@ -843,6 +846,7 @@
 	touchscreen@70 {
 		compatible = "syna,rmi4-i2c";
 		reg = <0x70>;
+		status = "okay";
 
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -884,14 +888,17 @@
 		compatible = "lontium,lt8912b";
 		reg = <0x48>;
 		#sound-dai-cells = <0>;
+		power-supply = <&vreg_l21a_2p95>;
 
 		pinctrl-names = "default";
 		pinctrl-0 = <&lt8912_pins>;
 
-		reset-gpios = <&tlmm 12 GPIO_ACTIVE_HIGH>;
+		reset-gpios = <&tlmm 12 GPIO_ACTIVE_LOW>;
 		power-gpios = <&tlmm 8 GPIO_ACTIVE_HIGH>;
 		enable-gpios = <&tlmm 13 GPIO_ACTIVE_HIGH>;
 		hpd-gpios = <&tlmm 121 GPIO_ACTIVE_HIGH>;
+
+		startup-delay-ms = <100>;
 
 		ports {
 			#address-cells = <1>;
@@ -919,6 +926,8 @@
 		reg = <0x49>;
 		#sound-dai-cells = <0>;
 
+		power-supply = <&vreg_l21a_2p95>;
+
 		pinctrl-names = "default";
 		pinctrl-0 = <&lt8912_micro_pins>;
 
@@ -926,6 +935,8 @@
 		power-gpios = <&tlmm 93 GPIO_ACTIVE_HIGH>;
 		enable-gpios = <&tlmm 97 GPIO_ACTIVE_HIGH>;
 		hpd-gpios = <&tlmm 98 GPIO_ACTIVE_HIGH>;
+
+		startup-delay-ms = <100>;
 
 		ports {
 			#address-cells = <1>;
@@ -967,7 +978,7 @@
 		vsp-supply = <&lab>;
 		vsn-supply = <&ibb>;
 
-		reset-gpios = <&tlmm 6 GPIO_ACTIVE_HIGH>;
+		reset-gpios = <&tlmm 6 GPIO_ACTIVE_LOW>;
 		enable-gpios = <&tlmm 120 GPIO_ACTIVE_HIGH>;
 		rotation = <90>;
 
@@ -1591,7 +1602,7 @@
 	gamepad_pins: gamepad-state {
 		pins = "gpio0", "gpio3", "gpio7", "gpio22", "gpio24",
 		       "gpio25", "gpio26", "gpio40", "gpio41", "gpio49",
-		       "gpio52", "gpio87", "gpio91", "gpio92", "gpio95",
+		       "gpio52", "gpio91", "gpio92", "gpio95",
 		       "gpio96", "gpio116", "gpio122", "gpio124";
 		function = "gpio";
 		drive-strength = <2>;
@@ -1603,15 +1614,15 @@
 		reset-pins {
 			pins = "gpio12";
 			function = "gpio";
-			drive-strength = <8>;
+			drive-strength = <2>;
 			bias-disable;
-			output-high;
+			output-low;
 		};
 
 		power-pins {
 			pins = "gpio8";
 			function = "gpio";
-			drive-strength = <8>;
+			drive-strength = <2>;
 			bias-disable;
 			output-high;
 		};
@@ -1619,7 +1630,7 @@
 		enable-pins {
 			pins = "gpio13";
 			function = "gpio";
-			drive-strength = <8>;
+			drive-strength = <2>;
 			bias-disable;
 			output-high;
 		};
@@ -1628,7 +1639,7 @@
 			pins = "gpio121";
 			function = "gpio";
 			drive-strength = <2>;
-			bias-pull-down;
+			bias-disable;
 			input-enable;
 		};
 	};
@@ -1639,13 +1650,13 @@
 			function = "gpio";
 			drive-strength = <8>;
 			bias-disable;
-			output-high;
+			output-low;
 		};
 
 		power-pins {
 			pins = "gpio93";
 			function = "gpio";
-			drive-strength = <8>;
+			drive-strength = <2>;
 			bias-disable;
 			output-high;
 		};
@@ -1653,7 +1664,7 @@
 		enable-pins {
 			pins = "gpio97";
 			function = "gpio";
-			drive-strength = <8>;
+			drive-strength = <2>;
 			bias-disable;
 			output-high;
 		};
@@ -1662,7 +1673,7 @@
 			pins = "gpio98";
 			function = "gpio";
 			drive-strength = <2>;
-			bias-pull-down;
+			bias-disable;
 			input-enable;
 		};
 	};
@@ -1671,7 +1682,7 @@
 		pins = "gpio98";
 		function = "gpio";
 		drive-strength = <2>;
-		bias-pull-down;
+		bias-disable;
 		input-enable;
 	};
 
@@ -1679,14 +1690,14 @@
 		pins = "gpio6";
 		function = "gpio";
 		drive-strength = <8>;
-		bias-disable;
+		bias-pull-down;
 		output-high;
 	};
 
 	panel_enable_pins: panel-enable-state {
 		pins = "gpio120";
 		function = "gpio";
-		drive-strength = <8>;
+		drive-strength = <16>;
 		bias-disable;
 		output-high;
 	};
@@ -1750,7 +1761,7 @@
 		pins = "gpio104";
 		function = "gpio";
 		drive-strength = <8>;
-		bias-disable;
+		bias-pull-down;
 		output-high;
 	};
 
@@ -1758,7 +1769,7 @@
 		pins = "gpio129";
 		function = "gpio";
 		drive-strength = <2>;
-		bias-disable;
+		bias-pull-down;
 		output-low;
 	};
 
@@ -1766,7 +1777,7 @@
 		pins = "gpio128";
 		function = "gpio";
 		drive-strength = <2>;
-		bias-disable;
+		bias-pull-up;
 		output-high;
 	};
 
@@ -1774,7 +1785,7 @@
 		pins = "gpio135";
 		function = "gpio";
 		drive-strength = <2>;
-		bias-disable;
+		bias-pull-up;
 		output-high;
 	};
 
@@ -1783,7 +1794,7 @@
 		pins = "gpio54";
 		function = "gpio";
 		input-enable;
-		bias-pull-down;
+		bias-pull-up;
 		drive-strength = <2>;
 	};
 
@@ -1791,16 +1802,16 @@
 	spkr_1_sd_n: spkr-1-sd-n-state {
 		pins = "gpio89";
 		function = "gpio";
-		drive-strength = <2>;
-		bias-disable;
+		drive-strength = <8>;
+		bias-pull-down;
 		output-low;
 	};
 
 	spkr_2_sd_n: spkr-2-sd-n-state {
 		pins = "gpio90";
 		function = "gpio";
-		drive-strength = <2>;
-		bias-disable;
+		drive-strength = <8>;
+		bias-pull-down;
 		output-low;
 	};
 
